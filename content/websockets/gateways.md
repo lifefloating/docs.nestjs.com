@@ -35,6 +35,47 @@ You can pass any supported [option](https://socket.io/docs/v4/server-options/) t
 @WebSocketGateway(81, { transports: ['websocket'] })
 ```
 
+#### Dynamic paths
+
+Gateways support dynamic path parameters, similar to HTTP controllers:
+
+```typescript
+@WebSocketGateway({ path: '/chat/:roomId/socket' })
+export class ChatGateway {
+  @SubscribeMessage('join')
+  handleJoin(
+    @MessageBody() data: any,
+    @WsParam('roomId') roomId: string,
+  ) {
+    return { roomId, message: data.message };
+  }
+
+  // Get all parameters
+  @SubscribeMessage('status')
+  handleStatus(@WsParam() params: Record<string, string>) {
+    return { params };
+  }
+}
+```
+
+Multiple parameters are also supported:
+
+```typescript
+@WebSocketGateway({ path: '/game/:gameId/room/:roomId/socket' })
+export class GameGateway {
+  @SubscribeMessage('move')
+  handleMove(
+    @MessageBody() data: any,
+    @WsParam('gameId') gameId: string,
+    @WsParam('roomId') roomId: string,
+  ) {
+    return { gameId, roomId, move: data };
+  }
+}
+```
+
+> info **Hint** The `@WsParam()` decorator is imported from `@nestjs/websockets` package.
+
 The gateway is now listening, but we have not yet subscribed to any incoming messages. Let's create a handler that will subscribe to the `events` messages and respond to the user with the exact same data.
 
 ```typescript

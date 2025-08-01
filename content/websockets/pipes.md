@@ -24,3 +24,26 @@ handleEvent(client, data) {
   return { event, data };
 }
 ```
+
+#### Path parameter pipes
+
+Pipes can be applied to path parameters using the `@WsParam()` decorator:
+
+```typescript
+@@filename()
+@SubscribeMessage('message')
+handleMessage(
+  @WsParam('roomId', ParseIntPipe) roomId: number,
+  @MessageBody() data: string,
+) {
+  return { roomId, message: data };
+}
+@@switch
+@SubscribeMessage('message')
+handleMessage(
+  @WsParam('roomId', ParseIntPipe) roomId,
+  @MessageBody() data,
+) {
+  return { roomId, message: data };
+}
+```
